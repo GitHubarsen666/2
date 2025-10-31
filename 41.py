@@ -1,27 +1,22 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-
-num_nodes = 6  # наприклад, 6 типів ресурсів: сторінка курсу, лекція, книга, відео, тест, форум
+num_nodes = 100  # наприклад, 100 типів ресурсів: сторінка курсу, лекція, книга, відео, тест, форум
 dist_matrix = np.random.randint(1, 10, (num_nodes, num_nodes)).astype(float)
 np.fill_diagonal(dist_matrix, np.inf)  # щоб мураха не поверталась у той самий вузол
 
-
-num_ants = 10          # кількість мурах (користувачів, які шукають оптимальний шлях)
+num_ants = 50          # кількість мурах (користувачів, які шукають оптимальний шлях)
 num_iterations = 30    # кількість ітерацій
 alpha = 1              # вплив феромону
 beta = 2               # вплив відстані (чим коротше — тим краще)
 rho = 0.5              # коефіцієнт випаровування феромонів
 
-
 # Початкові феромони (всі шляхи мають однакову "привабливість")
 pheromone = np.ones((num_nodes, num_nodes))
-
 
 best_path = None
 best_cost = np.inf
 best_costs = []
-
 
 for iteration in range(num_iterations):
     all_paths = []
@@ -59,13 +54,10 @@ for iteration in range(num_iterations):
         for i in range(len(path) - 1):
             pheromone[path[i]][path[i + 1]] += 1.0 / cost
 
-
     best_costs.append(best_cost)
-
 
 print("Найкращий знайдений маршрут (послідовність дій користувача):", best_path)
 print("Загальна вартість (оптимальність шляху):", best_cost)
-
 
 plt.plot(best_costs, color='purple', marker='o', linewidth=2)
 plt.xlabel("Ітерація")
