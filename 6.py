@@ -1,25 +1,39 @@
 import numpy as np
 from scipy.optimize import linprog
+import matplotlib.pyplot as plt
 
+# Параметри оптимізації
+c = [-5, -3]  # Цільова функція
+A = [[1, 1], [0, 1]]  # Обмеження
+b = [500, 1000]  # Ліміти
 
-# Цільова функція: максимізувати активність користувачів
-# Наприклад, коефіцієнти від активності за перегляди та завантаження
-c = [-5, -3]  # мінімізуємо, тому ставимо знак мінус
+# Розв'язок
+res = linprog(c, A_ub=A, b_ub=b, bounds=[(0, None), (0, None)], method='highs')
+optimal_x, optimal_y = res.x
+optimal_value = -res.fun
 
+print("Оптимальні рекомендації:", res.x)
+print("Максимальна активність:", optimal_value)
 
-# Обмеження:
-# 1. Загальна кількість матеріалів не більше 8
-# 2. Завантаження користувачами не більше 5
-A = [[1, 1],
-     [0, 1]]
-b = [8, 5]
+# Графік
+plt.figure(figsize=(10, 6))
 
+# Область допустимих рішень
+x = np.linspace(0, 600, 100)
+plt.fill_between(x, 0, np.minimum(1000, 500 - x), alpha=0.3, label='Допустима область')
 
-# Межі для кожного виду активності
-x0_bounds = (0, None)
-x1_bounds = (0, None)
+# Лінії обмежень
+plt.plot(x, 500 - x, 'r-', label='x + y ≤ 500')
+plt.axhline(1000, color='g', linestyle='--', label='y ≤ 1000')
 
+# Оптимальна точка
+plt.plot(optimal_x, optimal_y, 'ro', markersize=8, label=f'Оптимум ({optimal_x:.0f}, {optimal_y:.0f})')
 
-res = linprog(c, A_ub=A, b_ub=b, bounds=[x0_bounds, x1_bounds], method='highs')
-print("Оптимальні рекомендації для активності користувачів:", res.x)
-print("Максимальна очікувана активність:", -res.fun)
+plt.xlabel('Перегляди')
+plt.ylabel('Завантаження')
+plt.title('Оптимізація активності користувачів')
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.xlim(0, 600)
+plt.ylim(0, 1200)
+plt.show()
